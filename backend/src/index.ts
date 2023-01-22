@@ -1,35 +1,18 @@
-import { PrismaClient } from '@prisma/client'
+import express, { urlencoded } from "express"
+import userRouter from "./routes/user.routes";
+import cors from 'cors';
+const app = express();
+import * as path from "path"
+import dotenv from "dotenv";
+dotenv.config({path:path.resolve("./.env")})
 
-const prisma = new PrismaClient()
+app.use(express.json())
+app.use(urlencoded({extended:true}))
+app.use(cors({
+    origin:process.env.CLIENT_URL as string 
+}))
 
-async function main() {
-  await prisma.user.create({
-    data: {
-      name: 'Alice',
-      email: 'alice@prisma.io',
-      posts: {
-        create: { caption: 'Hello World' },
-      },
-      profile: {
-        create: { bio: 'I like turtles' },
-      },
-    },
-  })
 
-  const allUsers = await prisma.user.findMany({
-    include: {
-      posts: true,
-      profile: true,
-    },
-  })
-  console.dir(allUsers, { depth: null })
-}
+app.use("/user",userRouter)
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-  })
+app.listen(4000)
