@@ -141,7 +141,7 @@ class UserService {
             if (user) {
                 const match = await bcrypt.compare(password, user.password);
                 if (match) {
-                    const token = jwt.sign({ useerId: user.userId }, process.env.JWT_SECRET as string)
+                    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET as string)
                     return token;
                 } else {
                     return 0;

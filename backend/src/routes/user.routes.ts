@@ -1,8 +1,9 @@
 import { Request, Response, Router } from "express"
 import UserController from "../controllers/user.controller";
+import authorization from "../middleware/authorization.middleware";
 const userRouter = Router();
 
-userRouter.get("/list", async (req: Request, res: Response) => {
+userRouter.get("/list", authorization, async (req: Request, res: Response) => {
     try {
         const userController = new UserController(req, res);
         await userController.getListOfUsers();
@@ -11,7 +12,7 @@ userRouter.get("/list", async (req: Request, res: Response) => {
     }
 })
 
-userRouter.get("/:id", async (req: Request, res: Response) => {
+userRouter.get("/:id", authorization, async (req: Request, res: Response) => {
     try {
         const userController = new UserController(req, res);
         await userController.getASingleUser();
@@ -20,7 +21,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     }
 })
 
-userRouter.put("/update/:id", async (req: Request, res: Response) => {
+userRouter.put("/update/:id", authorization, async (req: Request, res: Response) => {
     try {
         const userController = new UserController(req, res);
         await userController.updateUser();
@@ -29,7 +30,7 @@ userRouter.put("/update/:id", async (req: Request, res: Response) => {
     }
 })
 
-userRouter.delete("/delete/:id", async (req: Request, res: Response) => {
+userRouter.delete("/delete/:id", authorization, async (req: Request, res: Response) => {
     try {
         const userController = new UserController(req, res);
         await userController.deleteUser();
