@@ -26,7 +26,7 @@ class UserService {
 
     async getASingleUser(id: string) {
         try {
-            if (id.length === 40) {
+            if (id.length <= 40) {
                 const user = await this.User.findFirst({
                     where: {
                         userId: id
