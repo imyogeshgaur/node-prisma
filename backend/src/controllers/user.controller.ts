@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { userInfo } from "os";
-import { send } from "process";
+import * as path from "path"
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve("./.env") })
 import UserService from "../services/user.service";
 
 class UserController {
@@ -43,10 +44,17 @@ class UserController {
     async updateUser() {
         try {
             const id = this.req.params.id;
-            const body = this.req.body;
-            const updateData = await this.service.updateUser(id, body);
-            if (updateData) {
-                return this.res.status(200).send("User Details Updated !!!")
+            const firstName = this.req.body.firstName;
+            const middleName = this.req.body.middleName;
+            const lastName = this.req.body.lastName;
+            const phone = this.req.body.phone;
+            const file = process.env.USER_IMAGE_URL as string + this.req.file?.filename
+            const data = { firstName, middleName, lastName, phone, file }
+            const updateData = await this.service.updateUser(id, data);
+            if (updateData !== 0) {
+                return this.res.status(200).send({ message: "User Details Updated !!!" })
+            } else {
+                return this.res.status(200).send({message:"User Details Not Updated !!!"})
             }
         } catch (error) {
             console.log(error)
@@ -58,8 +66,10 @@ class UserController {
         try {
             const id = this.req.params.id;
             const deleteData = await this.service.deleteUser(id);
-            if (deleteData) {
-                this.res.status(200).send("User Deleted !!!");
+            if (deleteData !== 0) {
+                return this.res.status(200).send({message:"User Deleted !!!"});
+            }else{
+                return this.res.status(200).send({message:"User Not Deleted !!!"});
             }
         } catch (error) {
             console.log(error)

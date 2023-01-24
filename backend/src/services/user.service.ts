@@ -5,6 +5,7 @@ import * as path from "path"
 import dotenv from "dotenv";
 import decodeUser from "../helpers/decodeUser.helper";
 dotenv.config({ path: path.resolve("./.env") })
+import * as fs from "fs"
 
 class UserService {
     private User: any;
@@ -56,6 +57,7 @@ class UserService {
     }
 
     async updateUser(id: string, userData: any) {
+        const { firstName, middleName, lastName, phone, file } = userData
         try {
             const user = await this.User.findFirst({
                 where: {
@@ -63,22 +65,42 @@ class UserService {
                 }
             })
             if (user) {
-                const password = userData.password;
-                if (password) {
-                    const newPassword = await bcrypt.hash(password, 12)
-                    const updateUser = await this.User.update({
-                        where: {
-                            userId: id
-                        },
-                        data: {
-                            phone: userData.phone,
-                            firstName: userData.firstName,
-                            middleName: userData.middleName,
-                            lastName: userData.lastName,
-                            password: newPassword
-                        }
-                    })
-                    return updateUser;
+                if (file.substring(34) !== undefined) {
+                    if (
+                        user.userImage ===  null 
+                        ||
+                        user.userImage.substring(34) === undefined
+                        ) {
+                        const updateUser = await this.User.update({
+                            where: {
+                                userId: id
+                            },
+                            data: {
+                                phone,
+                                firstName,
+                                middleName,
+                                lastName,
+                                userImage: file
+                            }
+                        })
+                        return updateUser
+                    } else {
+                        const imagePath = path.join(process.cwd(), `/src/uploads/Users/${user.userImage.substring(34)}`)
+                        fs.unlinkSync(imagePath);
+                        const updateUser = await this.User.update({
+                            where: {
+                                userId: id
+                            },
+                            data: {
+                                phone,
+                                firstName,
+                                middleName,
+                                lastName,
+                                userImage: file
+                            }
+                        })
+                        return updateUser;
+                    }
                 }
                 else {
                     const updateUser = await this.User.update({
@@ -86,10 +108,10 @@ class UserService {
                             userId: id
                         },
                         data: {
-                            phone: userData.phone,
-                            firstName: userData.firstName,
-                            middleName: userData.middleName,
-                            lastName: userData.lastName,
+                            phone,
+                            firstName,
+                            middleName,
+                            lastName,
                         }
                     })
                     return updateUser;

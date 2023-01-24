@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express"
 import UserController from "../controllers/user.controller";
 import authorization from "../middleware/authorization.middleware";
+import { uploadUser } from "../middleware/uploads.middleware";
 const userRouter = Router();
 
 userRouter.get("/list", authorization, async (req: Request, res: Response) => {
@@ -21,7 +22,7 @@ userRouter.get("/:id", authorization, async (req: Request, res: Response) => {
     }
 })
 
-userRouter.put("/update/:id", authorization, async (req: Request, res: Response) => {
+userRouter.put("/update/:id",[authorization,uploadUser], async (req: Request, res: Response) => {
     try {
         const userController = new UserController(req, res);
         await userController.updateUser();

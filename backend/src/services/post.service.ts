@@ -1,7 +1,12 @@
 import prisma from "../database/database.config";
+import * as path from "path"
+import dotenv from "dotenv";
 import decodeUser from "../helpers/decodeUser.helper";
+dotenv.config({ path: path.resolve("./.env") })
+import * as fs from "fs"
 
 class PostService {
+
     private Post: any;
     constructor() {
         this.Post = prisma.post;
@@ -64,29 +69,58 @@ class PostService {
     async updatePost(postId: string, data: any) {
         try {
             const { caption, hashtags, file } = data;
-            if (file===undefined) {
-                const updatedPost = await this.Post.update({
-                    where: {
-                        postId
-                    },
-                    data: {
-                        caption,
-                        hashtags,
-                        postImage: file
+            const post = await this.Post.findFirst({
+                where: {
+                    postId
+                }
+            })
+            if (post) {
+                if (file.substring(34) !== undefined) {
+                    if (
+                        post.postImage === null
+                        ||
+                        post.postImage.substring(34) === undefined
+                    ) {
+                        const updatedPost = await this.Post.update({
+                            where: {
+                                postId
+                            },
+                            data: {
+                                caption,
+                                hashtags,
+                                postImage: file
+                            }
+                        })
+                        return updatedPost
+                    } else {
+                        const imagePath = path.join(process.cwd(), `/src/uploads/Posts/${post.postImage.substring(34)}`)
+                        fs.unlinkSync(imagePath);
+                        const updatedPost = await this.Post.update({
+                            where: {
+                                postId
+                            },
+                            data: {
+                                caption,
+                                hashtags,
+                                postImage: file
+                            }
+                        })
+                        return updatedPost
                     }
-                })
-                return updatedPost
-            } else {
-                const updatedPost = await this.Post.update({
-                    where: {
-                        postId
-                    },
-                    data: {
-                        caption,
-                        hashtags,
-                    }
-                })
-                return updatedPost
+                } else {
+                    const updatedPost = await this.Post.update({
+                        where: {
+                            postId
+                        },
+                        data: {
+                            caption,
+                            hashtags,
+                        }
+                    })
+                    return updatedPost
+                }
+            }else{
+                return 0;
             }
         } catch (error) {
             console.log("Post's Service Error : ", error);

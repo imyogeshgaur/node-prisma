@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import PostService from "../services/post.service";
 import * as path from "path"
 import dotenv from "dotenv";
@@ -78,10 +78,10 @@ class PostController {
             const file = process.env.POST_IMAGE_URL as string + this.req.file?.filename;
             const data = { caption, hashtags, file }
             const updatedPost = await this.service.updatePost(postId, data);
-            if (updatedPost) {
-                return this.res.status(200).send("Post Details Updated !!!")
+            if (updatedPost !== 0) {
+                return this.res.status(200).send({ message: "Post Details Updated !!!" })
             } else {
-                return this.res.status(200).send("Post Details Not Updated !!!")
+                return this.res.status(200).send({ message: "Post Details Not Updated !!!" })
             }
         } catch (error) {
             console.log(error)
@@ -93,9 +93,9 @@ class PostController {
         try {
             const postId = this.req.params.postId;
             const deletedPost = await this.service.deletePost(postId);
-            if(deletedPost){
+            if (deletedPost) {
                 return this.res.status(200).send("Post Deleted !!!")
-            }else{
+            } else {
                 return this.res.status(200).send("Post Not Deleted !!!")
             }
         } catch (error) {
