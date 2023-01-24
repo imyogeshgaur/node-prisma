@@ -1,14 +1,14 @@
-import { PrismaClient, User } from "@prisma/client"
+import prisma from "../database/database.config";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import * as path from "path"
 import dotenv from "dotenv";
+import decodeUser from "../helpers/decodeUser.helper";
 dotenv.config({ path: path.resolve("./.env") })
 
 class UserService {
     private User: any;
     constructor() {
-        const prisma = new PrismaClient()
         this.User = prisma.user;
     }
     async getListOfUsers() {
@@ -26,15 +26,29 @@ class UserService {
 
     async getASingleUser(id: string) {
         try {
-            const user = await this.User.findFirst({
-                where: {
-                    userId: id
+            if (id.length === 40) {
+                const user = await this.User.findFirst({
+                    where: {
+                        userId: id
+                    }
+                })
+                if (user) {
+                    return user;
+                } else {
+                    return 0;
                 }
-            })
-            if (user) {
-                return user;
             } else {
-                return 0;
+                const userRet = await decodeUser(id);
+                const user = await this.User.findFirst({
+                    where: {
+                        userId: userRet?.userId
+                    }
+                })
+                if (user) {
+                    return user;
+                } else {
+                    return 0;
+                }
             }
         } catch (error) {
             console.log("User's Service : Internal Server Error !!!", error)
@@ -57,10 +71,10 @@ class UserService {
                             userId: id
                         },
                         data: {
-                            phone : userData.phone,
-                            firstName : userData.firstName,
-                            middleName : userData.middleName,
-                            lastName : userData.lastName,
+                            phone: userData.phone,
+                            firstName: userData.firstName,
+                            middleName: userData.middleName,
+                            lastName: userData.lastName,
                             password: newPassword
                         }
                     })
@@ -72,10 +86,10 @@ class UserService {
                             userId: id
                         },
                         data: {
-                            phone : userData.phone,
-                            firstName : userData.firstName,
-                            middleName : userData.middleName,
-                            lastName : userData.lastName,
+                            phone: userData.phone,
+                            firstName: userData.firstName,
+                            middleName: userData.middleName,
+                            lastName: userData.lastName,
                         }
                     })
                     return updateUser;

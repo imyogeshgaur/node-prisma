@@ -13,12 +13,21 @@ postRouter.get("/list", authorization, async (req: Request, res: Response) => {
     }
 })
 
-postRouter.get("/getPostForUser", authorization, async (req: Request, res: Response) => {
+postRouter.get("/getPostForUser/:authorId", authorization, async (req: Request, res: Response) => {
     try {
         const postController = new PostController(req, res)
         await postController.getListOfPostForUser();
     } catch (error) {
         console.log("Global Post Error : ", error)
+    }
+})
+
+postRouter.get("/:id", authorization, async (req: Request, res: Response) => {
+    try {
+        const userController = new PostController(req, res);
+        await userController.getASinglePost();
+    } catch (error) {
+        console.log("Global User Error !!!", error)
     }
 })
 

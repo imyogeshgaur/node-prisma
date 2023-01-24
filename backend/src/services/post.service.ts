@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "../database/database.config";
 import decodeUser from "../helpers/decodeUser.helper";
-
-const prisma = new PrismaClient();
 
 class PostService {
     private Post: any;

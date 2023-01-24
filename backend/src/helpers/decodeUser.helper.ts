@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "../database/database.config";
 import jwt from "jsonwebtoken";
-const prisma = new PrismaClient();
 
 const decodeUser = async (token: string) => {
     const User = prisma.user;
