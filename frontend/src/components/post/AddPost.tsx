@@ -23,7 +23,7 @@ const AddPost = () => {
         }
       })
         .then((res) => res.json())
-        .then((data) => {setdata(data); console.log(data)})
+        .then((data) => setdata(data))
         .catch((err) => console.log(err));
     }
   });
@@ -58,6 +58,20 @@ const AddPost = () => {
       }
     } catch (error) {
       console.log(error);
+      const a = toast.error("Network Error !!!", {
+        position: toast.POSITION.TOP_CENTER,
+        closeOnClick: false,
+        closeButton: false,
+        style: {
+          color: "red",
+          backgroundColor: "rgb(255, 206, 206)",
+        },
+      });
+      if (a == 1) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
     }
   };
   return (

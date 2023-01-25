@@ -7,6 +7,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [data, setdata] = useState<any>("");
   const [posts, setposts] = useState([]);
+  const [fail, setfail] = useState("")
   const token = localStorage.getItem("jwt")
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const Profile = () => {
         }
       })
         .then((res) => res.json())
-        .then((data) => {setdata(data); console.log(data)})
+        .then((data) => setdata(data))
         .catch((err) => console.log(err));
     }
 
@@ -30,7 +31,13 @@ const Profile = () => {
       }
     })
       .then((res) => res.json())
-      .then((post) => setposts(post))
+      .then((post) => {
+        if(post.message){
+          setfail(post.message)
+        }else{
+          setposts(post)
+        }
+      })
       .catch((err) => console.log(err));
   }, [token, navigate, data.email]);
 
@@ -42,7 +49,7 @@ const Profile = () => {
         secondOptionURL={`/profile/${data.userId}`}
       />
       <h1 className="text-center">
-        {posts.length === 0 ? "No Post To Display" : " "}
+        {fail === "No Post Exist !!!" ? "No Post To Display" : " "}
       </h1>
       <div className="row mt-4">
         {posts.map((val: any) => {

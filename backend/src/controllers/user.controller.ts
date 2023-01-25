@@ -18,7 +18,7 @@ class UserController {
         try {
             const users = await this.service.getListOfUsers();
             if (users === 0) {
-                return this.res.status(200).send("No Data Found !!!");
+                return this.res.status(200).send({ message: "No Data Found !!!" });
             }
             return this.res.status(200).send(users);
         } catch (error) {
@@ -32,7 +32,7 @@ class UserController {
             const id = this.req.params.id;
             const user = await this.service.getASingleUser(id);
             if (user === 0) {
-                return this.res.status(200).send("No User Found !!!");
+                return this.res.status(200).send({ message: "No User Found !!!" });
             }
             return this.res.status(200).send(user);
         } catch (error) {
@@ -54,7 +54,7 @@ class UserController {
             if (updateData !== 0) {
                 return this.res.status(200).send({ message: "User Details Updated !!!" })
             } else {
-                return this.res.status(200).send({message:"User Details Not Updated !!!"})
+                return this.res.status(200).send({ message: "User Details Not Updated !!!" })
             }
         } catch (error) {
             console.log(error)
@@ -67,9 +67,9 @@ class UserController {
             const id = this.req.params.id;
             const deleteData = await this.service.deleteUser(id);
             if (deleteData !== 0) {
-                return this.res.status(200).send({message:"User Deleted !!!"});
-            }else{
-                return this.res.status(200).send({message:"User Not Deleted !!!"});
+                return this.res.status(200).send({ message: "User Deleted !!!" });
+            } else {
+                return this.res.status(200).send({ message: "User Not Deleted !!!" });
             }
         } catch (error) {
             console.log(error)
@@ -83,7 +83,11 @@ class UserController {
         try {
             const data = this.req.body;
             const user = await this.service.signUpUser(data);
-            return this.res.status(200).send(user);
+            if (user === 0) {
+                return this.res.status(200).send({ message: "User Already Exist !!!" });
+            } else {
+                return this.res.status(200).send(user);
+            }
         } catch (error) {
             console.log(error)
             this.res.status(500).send("User's Controller : Internal Server Error !!!")
@@ -95,9 +99,9 @@ class UserController {
             const data = this.req.body;
             const token = await this.service.loginUser(data);
             if (token === -1) {
-                return this.res.status(200).send("Invalid Credentials !!!");
+                return this.res.status(200).send({ message: "Invalid Credentials !!!" });
             } else if (token === 0) {
-                return this.res.status(200).send("Invalid Credentials !!!");
+                return this.res.status(200).send({ message: "Invalid Credentials !!!" });
             } else {
                 return this.res.status(200).send({ token });
             }

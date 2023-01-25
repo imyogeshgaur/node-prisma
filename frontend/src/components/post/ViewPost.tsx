@@ -28,11 +28,12 @@ const ViewPost = () => {
 
   const deletePost = async () => {
       try {
-          await fetch(`http://localhost:5000/posts/delete/${param.id}`, {
+          await fetch(`http://localhost:4000/post/delete/${param.id}`, {
               mode: 'cors',
               method: 'DELETE',
               headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  authorization:token as string
               },
           })
           const a = toast.success("Post Deleted Sucessfully !!!", {

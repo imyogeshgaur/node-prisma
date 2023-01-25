@@ -67,10 +67,10 @@ class UserService {
             if (user) {
                 if (file.substring(34) !== undefined) {
                     if (
-                        user.userImage ===  null 
+                        user.userImage === null
                         ||
                         user.userImage.substring(34) === undefined
-                        ) {
+                    ) {
                         const updateUser = await this.User.update({
                             where: {
                                 userId: id
@@ -150,16 +150,26 @@ class UserService {
 
     async signUpUser(userData: any) {
         try {
-            const email = userData.email;
-            const password = userData.password;
-            const newPassword = await bcrypt.hash(password, 12);
-            const user = await this.User.create({
-                data: {
-                    email,
-                    password: newPassword
+            const enteredEmail = userData.email;
+            const email = enteredEmail.toLowerCase();
+            const userExist = await this.User.findFirst({
+                where: {
+                    email
                 }
             })
-            return user
+            if (userExist) {
+                return 0;
+            } else {
+                const password = userData.password;
+                const newPassword = await bcrypt.hash(password, 12);
+                const user = await this.User.create({
+                    data: {
+                        email,
+                        password: newPassword
+                    }
+                })
+                return user
+            }
         } catch (error) {
             console.log("User's Service : Internal Server Error !!!", error)
         }
@@ -167,7 +177,8 @@ class UserService {
 
     async loginUser(userData: any) {
         try {
-            const email = userData.email;
+            const enteredEmail = userData.email;
+            const email = enteredEmail.toLowerCase();
             const password = userData.password;
             const user = await this.User.findFirst({
                 where: {

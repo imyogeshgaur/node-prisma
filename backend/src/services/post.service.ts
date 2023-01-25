@@ -119,7 +119,7 @@ class PostService {
                     })
                     return updatedPost
                 }
-            }else{
+            } else {
                 return 0;
             }
         } catch (error) {
@@ -129,6 +129,14 @@ class PostService {
 
     async deletePost(postId: string) {
         try {
+            const postToBeDeleted = await this.Post.findFirst({
+                where: {
+                    postId
+                }
+            })
+            const deletedPostImage = postToBeDeleted.postImage;
+            const imagePath = path.join(process.cwd(), `/src/uploads/Posts/${deletedPostImage.substring(34)}`)
+            fs.unlinkSync(imagePath)
             const deletedPost = await this.Post.delete({
                 where: {
                     postId

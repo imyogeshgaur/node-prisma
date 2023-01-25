@@ -1,74 +1,114 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import NavBar from '../assets/NavBar'
-import { toast, ToastContainer } from 'react-toastify';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import NavBar from "../assets/NavBar";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Authentication = () => {
   const navigate = useNavigate();
-  const [authMode, setAuthMode] = useState("signin")
-  const [email, setemail] = useState("")
-  const [password, setpassword] = useState("")
+  const [authMode, setAuthMode] = useState("signin");
+  const [email, setemail] = useState("");
+  const [password, setpassword] = useState("");
+  const token =  localStorage.getItem("jwt");
 
   const changeAuthMode = () => {
-    setAuthMode(authMode === "signin" ? "signup" : "signin")
-  }
+    setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
+
+  useEffect(() => {
+    if(token === undefined){
+      navigate("/profile")
+    }
+  }, [])
+  
 
   const signUpApiCall = async () => {
     try {
       await fetch("http://localhost:4000/user/signup", {
-        mode: 'cors',
-        method: 'POST',
+        mode: "cors",
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password })
-      })
-      setemail("")
-      setpassword("")
+        body: JSON.stringify({ email, password }),
+      });
+      setemail("");
+      setpassword("");
       const a = toast.success("Welcome To Our Plateform !!!", {
         position: toast.POSITION.TOP_CENTER,
         closeOnClick: false,
         closeButton: false,
         style: {
           color: "green",
-          backgroundColor: "rgb(183, 248, 183)"
-        }
-      })
+          backgroundColor: "rgb(183, 248, 183)",
+        },
+      });
       if (a == 1) {
         setTimeout(() => {
-          window.location.href="/"
+          window.location.href = "/";
         }, 2000);
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const loginApiCall = async () => {
     try {
       const res = await fetch("http://localhost:4000/user/login", {
-        mode: 'cors',
-        method: 'POST',
+        mode: "cors",
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials:'same-origin',
-        body: JSON.stringify({ email, password })
-      })
+        credentials: "same-origin",
+        body: JSON.stringify({ email, password }),
+      });
       const data = await res.json();
-      localStorage.setItem("jwt",data.token);
-      navigate("/profile")
-      setemail("")
-      setpassword("")
+      if (data.token !== undefined) {
+        localStorage.setItem("jwt", data.token);
+        navigate("/profile");
+        setemail("");
+        setpassword("");
+      }else{
+        const a = toast.error(data.message, {
+          position: toast.POSITION.TOP_CENTER,
+          closeOnClick: false,
+          closeButton: false,
+          style: {
+            color: "red",
+            backgroundColor: "rgb(255, 206, 206)",
+          },
+        });
+        if (a == 1) {
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      }
     } catch (error) {
       console.log(error);
+      const a = toast.error("Network Error !!!", {
+        position: toast.POSITION.TOP_CENTER,
+        closeOnClick: false,
+        closeButton: false,
+        style: {
+          color: "red",
+          backgroundColor: "rgb(255, 206, 206)",
+        },
+      });
+      if (a == 1) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
     }
-  }
+  };
 
   if (authMode === "signin") {
     return (
       <>
-        <NavBar detail={"hidden"}/>
+        <NavBar detail={"hidden"} />
+        <ToastContainer autoClose={1000} />
         <div className={"Auth-form card-light mx-auto mt-5"}>
           <div className="Auth-form-content">
             <h3 className={"card-title text-center mb-2 text-dark"}>Sign In</h3>
@@ -99,22 +139,33 @@ const Authentication = () => {
               />
             </div>
             <div className="d-grid gap-2 mt-3">
-              <button type="submit" className="btn btn-danger" onClick={loginApiCall}>
+              <button
+                type="submit"
+                className="btn btn-danger"
+                onClick={loginApiCall}
+              >
                 Submit
               </button>
             </div>
             <p className="text-center mt-2">
-              Forgot  <Link to="/forgetPass" className={'text-white'} style={{ textDecoration: "none" }}>password</Link>
+              Forgot{" "}
+              <Link
+                to="/forgetPass"
+                className={"text-white"}
+                style={{ textDecoration: "none" }}
+              >
+                password
+              </Link>
             </p>
           </div>
         </div>
       </>
-    )
+    );
   }
 
   return (
     <>
-      <NavBar detail={"hidden"}/>
+      <NavBar detail={"hidden"} />
       <ToastContainer autoClose={1000} />
       <div className={"Auth-form card-light mx-auto mt-5"}>
         <div className="Auth-form-content">
@@ -146,17 +197,28 @@ const Authentication = () => {
             />
           </div>
           <div className="d-grid gap-2 mt-3">
-            <button type="submit" className="btn btn-danger" onClick={signUpApiCall}>
+            <button
+              type="submit"
+              className="btn btn-danger"
+              onClick={signUpApiCall}
+            >
               Submit
             </button>
           </div>
           <p className="text-center mt-2">
-            Forgot  <Link to="#" className={'text-white'} style={{ textDecoration: "none" }}>password</Link>
+            Forgot{" "}
+            <Link
+              to="#"
+              className={"text-white"}
+              style={{ textDecoration: "none" }}
+            >
+              password
+            </Link>
           </p>
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Authentication
+export default Authentication;

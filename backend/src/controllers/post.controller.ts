@@ -19,7 +19,7 @@ class PostController {
         try {
             const posts = await this.service.getListOfPost();
             if (posts.length === 0) {
-                return this.res.status(200).send("No Post Exist !!!")
+                return this.res.status(200).send({ message: "No Post Exist !!!" })
             } else {
                 return this.res.status(200).send(posts)
             }
@@ -34,7 +34,7 @@ class PostController {
             const authorId = this.req.params.authorId;
             const posts = await this.service.getListOfPostForUser(authorId);
             if (posts.length === 0) {
-                return this.res.status(200).send("No Post Exist !!!")
+                return this.res.status(200).send({ message: "No Post Exist !!!" })
             } else {
                 return this.res.status(200).send(posts)
             }
@@ -94,9 +94,9 @@ class PostController {
             const postId = this.req.params.postId;
             const deletedPost = await this.service.deletePost(postId);
             if (deletedPost) {
-                return this.res.status(200).send("Post Deleted !!!")
+                return this.res.status(200).send({ message: "Post Deleted !!!" })
             } else {
-                return this.res.status(200).send("Post Not Deleted !!!")
+                return this.res.status(200).send({ message: "Post Not Deleted !!!" })
             }
         } catch (error) {
             console.log(error)
